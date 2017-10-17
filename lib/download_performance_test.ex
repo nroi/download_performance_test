@@ -15,14 +15,14 @@ defmodule DownloadPerformanceTest do
   end
 
   def download_http() do
-    {:ok, :saved_to_file} = :httpc.request(:get, {url, []}, [], [{:stream, @save_to}])
+    {:ok, :saved_to_file} = :httpc.request(:get, {url(), []}, [], [{:stream, @save_to}])
   end
 
   def download_ibrowse() do
     opts = [save_response_to_file: {:append, @save_to}, stream_to: {self(), :once}]
-    {:ibrowse_req_id, req_id} = :ibrowse.send_req(url, [], :get, [], opts, :infinity)
+    {:ibrowse_req_id, req_id} = :ibrowse.send_req(url(), [], :get, [], opts, :infinity)
     receive do
-      {:ibrowse_async_headers, id, '200', _} -> :ok
+      {:ibrowse_async_headers, _id, '200', _} -> :ok
     end
     :ok = :ibrowse.stream_next(req_id)
     receive do
@@ -33,7 +33,7 @@ defmodule DownloadPerformanceTest do
   def download_hackney() do
     headers = []
     opts = []
-    {:ok, 200, headers, client} = :hackney.request(:get, url, headers, "", opts)
+    {:ok, 200, _headers, client} = :hackney.request(:get, url(), headers, "", opts)
     # Delayed write option improves performance a good bit.
     {:ok, file} = File.open(@save_to, [:append, :raw, :delayed_write])
     download_loop_hackney(client, file)
