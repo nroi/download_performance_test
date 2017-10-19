@@ -34,18 +34,15 @@ defmodule DownloadPerformanceTest do
     headers = []
     opts = []
     {:ok, 200, _headers, client} = :hackney.request(:get, url(), headers, "", opts)
-    # Delayed write option improves performance a good bit.
-    {:ok, file} = File.open(@save_to, [:append, :raw, :delayed_write])
-    download_loop_hackney(client, file)
+    download_loop_hackney(client)
   end
 
-  defp download_loop_hackney(client, file) do
+  defp download_loop_hackney(client) do
     case :hackney.stream_body(client) do
-      {:ok, result} ->
-        IO.binwrite(file, result)
-        download_loop_hackney(client, file)
+      {:ok, _} ->
+        download_loop_hackney(client)
       :done ->
-        :ok = File.close(file)
+        :ok
     end
   end
 
