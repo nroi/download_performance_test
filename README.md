@@ -8,7 +8,7 @@ Downloading a 100 MB file with curl and the four methods used in this program on
 | ------------- | ------------- |
 | curl  | 9  |
 | download_tcp  | 12  |
-| dowload_http  | 15  |
+| download_http  | 15  |
 | download_ibrowse  | 15  |
 | download_hackney  | 19  |
 
